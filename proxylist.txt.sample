@@ -1,0 +1,8 @@
+#Here's the list of proxy servers to be tested by Sanca
+#Feel free to add or delete proxy servers, please note that the more proxy listed in this file
+#the longer the testing will take
+
+202.137.22.182:8080
+116.213.51.82:80
+118.98.35.251:8080
+
