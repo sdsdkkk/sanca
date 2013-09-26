@@ -32,6 +32,7 @@ TIMEOUT = 10				# set timeout for connections
 PROXY_LIST = 'proxylist.txt'		# list of proxy servers to be tested
 RECORD_FILE = 'record.txt'		# testing history and prediction records
 TESTING_URL = 'http://www.google.com'	# the URL to fetch web page from
+SHOW_RECORDS = False			# show/don't show all data on record
 #========================================================================================#
 
 
@@ -153,11 +154,15 @@ class ProxyServerList:
 
     def TestServers(self):
         f = open(RECORD_FILE, 'w')
-        f.write("#This file is used to store the records of the proxies tested\n")
-        f.write("#Modifying this file directly is not recommended, as for it can affect the program's performance\n\n")
+        f.write("# This file is used to store the records of the proxies tested\n")
+        f.write("# Modifying this file directly is not recommended, as for it can affect the program's performance\n\n")
         for server in self.ServerList:
             msg = server.CheckDelay()
-            print msg
+            if SHOW_RECORDS:
+                print msg
+            else:
+                buff = msg.split(' ')
+                print buff[0] + ' ' + buff[1]
             f.write(msg + '\n')
         f.close()
 
@@ -165,11 +170,14 @@ class ProxyServerList:
 #===================================== MAIN PROGRAM =====================================#
 
 def main():
+    global SHOW_RECORDS
     parser = optparse.OptionParser()
     parser.add_option("-t", "--target", action="store", type="string", dest="URL", help="change default testing URL", metavar="URL")
+    parser.add_option("-r", "--record", action="store", type="string", dest="record", help="if true, show contents of record file", metavar="[T|F]")
     options, args = parser.parse_args()
     TESTING_URL = options.URL
-    print TESTING_URL
+    if options.record == 'T' or options.record == 't':
+        SHOW_RECORDS = True
     proxylist = ProxyServerList()
     proxylist.TestServers()
 
