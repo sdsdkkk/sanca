@@ -23,6 +23,7 @@ from datetime import datetime
 from datetime import timedelta
 import httplib
 import sys
+import optparse
 
 #============================= PROXY SELECTOR CONFIGURATION =============================#
 BUFFER_LENGTH = 60			# amount of record history saved
@@ -163,16 +164,14 @@ class ProxyServerList:
 
 #===================================== MAIN PROGRAM =====================================#
 
-if len(sys.argv) < 2 or (sys.argv[1] != '-d' and sys.argv[len(sys.argv)-1] != 'start') or (sys.argv[1] == '-d' and sys.argv[2] == 'start'):
-    print ''
-    print 'How to use:'
-    print 'sanca.py start'
-    print 'sanca.py -d [destination web server address] start'
-    print '\t1. If the destination web server is not specified, the destination web server will be set to Google'
-    print '\t2. Proxy list can be edited in the file proxylist.txt'
-    sys.exit()
-elif sys.argv[1] == '-h' and sys.argv[2] != 'start':
-    TESTING_URL = sys.argv[2]
+def main():
+    parser = optparse.OptionParser()
+    parser.add_option("-t", "--target", action="store", type="string", dest="URL", help="change default testing URL", metavar="URL")
+    options, args = parser.parse_args()
+    TESTING_URL = options.URL
+    print TESTING_URL
+    proxylist = ProxyServerList()
+    proxylist.TestServers()
 
-proxylist = ProxyServerList()
-proxylist.TestServers()
+if __name__ == "__main__":
+    main()
