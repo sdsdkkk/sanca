@@ -169,12 +169,27 @@ class ProxyServerList:
 
 #====================================== FILE CHECK ======================================#
 
-def checkfile(FILE_NAME):
+def checkfile(FILE_NAME, CREATE_IF_NOT_EXISTS):
+    FILE_OK = True
+    print FILE_NAME
     if not os.path.exists(FILE_NAME):
-        print "[-] the file %s doesn't exists" % FILE_NAME
-        exit(0)
+        if not CREATE_IF_NOT_EXISTS:
+            print "[-] the file %s doesn't exists" % FILE_NAME
+        FILE_OK = False
     elif not os.path.isfile(FILE_NAME):
-        print "[-] the file %s is not a valid file" % FILE_NAME
+        print "[-] %s is a directory" % FILE_NAME
+        FILE_OK = False
+
+    if not FILE_OK and CREATE_IF_NOT_EXISTS:
+        try:
+            f = open(FILE_NAME, 'a')
+            f.close()
+            print "[+] Created file %s" % FILE_NAME
+        except:
+            print "[-] Error creating file %s" % FILE_NAME
+            exit(0)
+    elif not FILE_OK:
+        print "[-] File not found, stopping program"
         exit(0)
 
 
@@ -188,7 +203,7 @@ def main():
     parser.add_option("-t", "--target", action="store", type="string", dest="URL", help="change default testing URL", metavar="URL")
     parser.add_option("-s", "--show", action="store", type="string", dest="show", help="if true, show contents of record file", metavar="[T|F]")
     parser.add_option("-l", "--list", action="store", type="string", dest="list", help="read proxy list from file", metavar="filename")
-    parser.add_option("-r", "--record", action="store", type="string", dest="record", help="generate a new record file", metavar="filename")
+    parser.add_option("-r", "--record", action="store", type="string", dest="record", help="save record on file", metavar="filename")
     options, args = parser.parse_args()
     TESTING_URL = options.URL
     if options.list is not None:
@@ -197,8 +212,8 @@ def main():
         RECORD_FILE = options.record
     if options.show == 'T' or options.show == 't':
         SHOW_RECORDS = True
-    checkfile(PROXY_LIST)
-    checkfile(RECORD_FILE)
+    checkfile(PROXY_LIST, False)
+    checkfile(RECORD_FILE, True)
     proxylist = ProxyServerList()
     proxylist.TestServers()
 
