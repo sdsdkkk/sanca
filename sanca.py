@@ -6,18 +6,6 @@
 # Jormungandr Proxy Selector is a proxy selector written in C#
 # with proxy testing functionality written in Python
 #
-# As proxy servers have caching capabilities, this script can only be used
-# to test how fast the proxy server send the respond back to the client,
-# regardless of whether the proxy server fetch the web page directly from
-# the web server or just from the proxy server's cache.
-#
-# The implementation for forcing the proxy server to fetch the web page from
-# the web server was written in C# side of the application, and has not been
-# ported to the Python script yet.
-#
-# To do it in this version, get the proxy server to fetch Google's search
-# result page, using randomly generated keyword embedded in the URL. Use that
-# URL as the input argument to this script.
 
 from datetime import datetime
 from datetime import timedelta
@@ -201,7 +189,7 @@ def main():
     global RECORD_FILE
     parser = optparse.OptionParser()
     parser.add_option("-t", "--target", action="store", type="string", dest="URL", help="change default testing URL", metavar="URL")
-    parser.add_option("-s", "--show", action="store", type="string", dest="show", help="if true, show contents of record file", metavar="[T|F]")
+    parser.add_option("-s", "--show", action="store_true", dest="show", help="show contents of record file")
     parser.add_option("-l", "--list", action="store", type="string", dest="list", help="read proxy list from file", metavar="filename")
     parser.add_option("-r", "--record", action="store", type="string", dest="record", help="save record on file", metavar="filename")
     options, args = parser.parse_args()
@@ -210,7 +198,7 @@ def main():
         PROXY_LIST = options.list
     if options.record is not None:
         RECORD_FILE = options.record
-    if options.show == 'T' or options.show == 't':
+    if options.show == True:
         SHOW_RECORDS = True
     checkfile(PROXY_LIST, False)
     checkfile(RECORD_FILE, True)
