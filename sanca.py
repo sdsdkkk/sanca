@@ -159,7 +159,6 @@ class ProxyServerList:
 
 def checkfile(FILE_NAME, CREATE_IF_NOT_EXISTS):
     FILE_OK = True
-    print FILE_NAME
     if not os.path.exists(FILE_NAME):
         if not CREATE_IF_NOT_EXISTS:
             print "[-] the file %s doesn't exists" % FILE_NAME
