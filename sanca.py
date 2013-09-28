@@ -24,6 +24,7 @@ from datetime import timedelta
 import httplib
 import sys
 import optparse
+import os
 
 #============================= PROXY SELECTOR CONFIGURATION =============================#
 BUFFER_LENGTH = 60			# amount of record history saved
@@ -166,18 +167,38 @@ class ProxyServerList:
             f.write(msg + '\n')
         f.close()
 
+#====================================== FILE CHECK ======================================#
+
+def checkfile(FILE_NAME):
+    if not os.path.exists(FILE_NAME):
+        print "[-] the file %s doesn't exists" % FILE_NAME
+        exit(0)
+    elif not os.path.isfile(FILE_NAME):
+        print "[-] the file %s is not a valid file" % FILE_NAME
+        exit(0)
+
 
 #===================================== MAIN PROGRAM =====================================#
 
 def main():
     global SHOW_RECORDS
+    global PROXY_LIST
+    global RECORD_FILE
     parser = optparse.OptionParser()
     parser.add_option("-t", "--target", action="store", type="string", dest="URL", help="change default testing URL", metavar="URL")
-    parser.add_option("-r", "--record", action="store", type="string", dest="record", help="if true, show contents of record file", metavar="[T|F]")
+    parser.add_option("-s", "--show", action="store", type="string", dest="show", help="if true, show contents of record file", metavar="[T|F]")
+    parser.add_option("-l", "--list", action="store", type="string", dest="list", help="read proxy list from file", metavar="filename")
+    parser.add_option("-r", "--record", action="store", type="string", dest="record", help="generate a new record file", metavar="filename")
     options, args = parser.parse_args()
     TESTING_URL = options.URL
-    if options.record == 'T' or options.record == 't':
+    if options.list is not None:
+        PROXY_LIST = options.list
+    if options.record is not None:
+        RECORD_FILE = options.record
+    if options.show == 'T' or options.show == 't':
         SHOW_RECORDS = True
+    checkfile(PROXY_LIST)
+    checkfile(RECORD_FILE)
     proxylist = ProxyServerList()
     proxylist.TestServers()
 
