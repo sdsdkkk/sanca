@@ -13,6 +13,7 @@ import httplib
 import sys
 import optparse
 import os
+import hashlib
 
 #============================= PROXY SELECTOR CONFIGURATION =============================#
 BUFFER_LENGTH = 60			# amount of record history saved
@@ -22,6 +23,7 @@ PROXY_LIST = 'proxylist.txt'		# list of proxy servers to be tested
 RECORD_FILE = 'record.txt'		# testing history and prediction records
 TESTING_URL = 'http://www.google.com'	# the URL to fetch web page from
 SHOW_RECORDS = False			# show/don't show all data on record
+FORCE_SERVER = False            # force proxy server to forward request to web server
 #========================================================================================#
 
 
@@ -186,11 +188,13 @@ def main():
     global SHOW_RECORDS
     global PROXY_LIST
     global RECORD_FILE
+    global FORCE_SERVER
     parser = optparse.OptionParser()
     parser.add_option("-t", "--target", action="store", type="string", dest="URL", help="change default testing URL", metavar="URL")
     parser.add_option("-s", "--show", action="store_true", dest="show", help="show contents of record file")
     parser.add_option("-l", "--list", action="store", type="string", dest="list", help="read proxy list from file", metavar="filename")
     parser.add_option("-r", "--record", action="store", type="string", dest="record", help="save record on file", metavar="filename")
+    parser.add_option("-f", "--force", action="store_true", dest="force", help="force proxy server to forward the request to Google's web server, disabling web server to respond using cache data")
     options, args = parser.parse_args()
     TESTING_URL = options.URL
     if options.list is not None:
@@ -199,8 +203,15 @@ def main():
         RECORD_FILE = options.record
     if options.show == True:
         SHOW_RECORDS = True
+    if options.force == True:
+        FORCE_SERVER = True
     checkfile(PROXY_LIST, False)
     checkfile(RECORD_FILE, True)
+
+    if FORCE_SERVER:
+        chk = hashlib.md5()
+        chk.update(str(datetime.now()))
+        TESTING_URL = "http://www.google.com/search?channel=fs&q=" + chk.hexdigest() + "&ie=utf-8&oe=utf-8"
     proxylist = ProxyServerList()
     proxylist.TestServers()
 
