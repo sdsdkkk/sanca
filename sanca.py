@@ -23,9 +23,9 @@ PROXY_LIST = 'proxylist.txt'		# list of proxy servers to be tested
 RECORD_FILE = 'record.txt'		# testing history and prediction records
 TESTING_URL = 'http://www.google.com'	# the URL to fetch web page from
 SHOW_RECORDS = False			# show/don't show all data on record
-FORCE_SERVER = False            # force proxy server to forward request to web server
-LOOP_REQUEST = False            # loops the request for a number of times
-LOOP_NUMBER = 3                # default number of loops
+FORCE_SERVER = False            	# force proxy server to forward request to web server
+LOOP_REQUEST = False 	 	        # loops the request for a number of times
+LOOP_NUMBER = 3                		# default number of loops
 #========================================================================================#
 
 
