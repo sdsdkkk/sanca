@@ -24,6 +24,8 @@ RECORD_FILE = 'record.txt'		# testing history and prediction records
 TESTING_URL = 'http://www.google.com'	# the URL to fetch web page from
 SHOW_RECORDS = False			# show/don't show all data on record
 FORCE_SERVER = False            # force proxy server to forward request to web server
+LOOP_REQUEST = False            # loops the request for a number of times
+LOOP_NUMBER = 3                # default number of loops
 #========================================================================================#
 
 
@@ -189,12 +191,16 @@ def main():
     global PROXY_LIST
     global RECORD_FILE
     global FORCE_SERVER
+    global LOOP_REQUEST
+    global LOOP_NUMBER
     parser = optparse.OptionParser()
     parser.add_option("-t", "--target", action="store", type="string", dest="URL", help="change default testing URL", metavar="URL")
     parser.add_option("-s", "--show", action="store_true", dest="show", help="show contents of record file")
     parser.add_option("-l", "--list", action="store", type="string", dest="list", help="read proxy list from file", metavar="filename")
     parser.add_option("-r", "--record", action="store", type="string", dest="record", help="save record on file", metavar="filename")
     parser.add_option("-f", "--force", action="store_true", dest="force", help="force proxy server to forward the request to Google's web server, disabling web server to respond using cache data")
+    parser.add_option("-L", "--loop", action="store_true", dest="loop", help="send requests several times in a loop")
+    parser.add_option("-R", "--repeat", action="store", type="int", dest="repeat", help="how many times the loop is repeated (default: 3)", metavar="number_of_repeats")
     options, args = parser.parse_args()
     TESTING_URL = options.URL
     if options.list is not None:
@@ -205,15 +211,27 @@ def main():
         SHOW_RECORDS = True
     if options.force == True:
         FORCE_SERVER = True
+    if options.loop == True:
+        LOOP_REQUEST = True
+    if options.repeat is not None:
+        LOOP_NUMBER = options.repeat
     checkfile(PROXY_LIST, False)
     checkfile(RECORD_FILE, True)
 
-    if FORCE_SERVER:
-        chk = hashlib.md5()
-        chk.update(str(datetime.now()))
-        TESTING_URL = "http://www.google.com/search?channel=fs&q=" + chk.hexdigest() + "&ie=utf-8&oe=utf-8"
-    proxylist = ProxyServerList()
-    proxylist.TestServers()
+    if not LOOP_REQUEST:
+        LOOP_NUMBER = 1
+
+    for i in range(0, LOOP_NUMBER):
+        if FORCE_SERVER:
+            chk = hashlib.md5()
+            chk.update(str(datetime.now()))
+            TESTING_URL = "http://www.google.com/search?channel=fs&q=" + chk.hexdigest() + "&ie=utf-8&oe=utf-8"
+        proxylist = ProxyServerList()
+        proxylist.TestServers()
+
+        if LOOP_NUMBER > 1:
+            print "Number of loops finished:", i + 1
+            print ""
 
 if __name__ == "__main__":
     main()
